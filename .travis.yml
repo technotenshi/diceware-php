@@ -1,24 +1,29 @@
 language: php
 php:
-  - 5.4
-  - 5.5
-  - 5.6
+  - '8.2.35'
+  - '8.3.36'
+  - '8.4.27'
+  - '8.5.12'
+env:
+  global:
+    - XDEBUG_MODE=coverage
+before_install:
+  - php -r 'if (PHP_VERSION !== getenv("TRAVIS_PHP_VERSION")) { fwrite(STDERR, "Requested PHP runtime unavailable\n"); exit(1); }'
+  - php scripts/verify-runtime.php
 install:
-  - composer self-update
-  - composer install
+  - composer install --no-interaction --prefer-dist
+  - composer check-platform-reqs
+  - composer check-platform-reqs --no-dev
+  - composer audit --locked
 before_script:
   - sh ./build/ci/createEnvFile.sh
   - sh ./build/ci/createSqliteFile.sh
-  - chmod +x ./vendor/bin/behat
-  - chmod +x ./vendor/bin/phpunit
-  - chmod +x ./vendor/bin/coveralls
-  - php artisan migrate
+  - php artisan migrate --force
   - mkdir -p build/logs
 script:
-  - ./vendor/bin/phpunit
-  - ./vendor/bin/behat
+  - vendor/bin/phpunit
+  - vendor/bin/behat
 after_script:
- - ./vendor/bin/coveralls -v
- - wget https://scrutinizer-ci.com/ocular.phar
- - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
- 
+  - vendor/bin/php-coveralls -v
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml

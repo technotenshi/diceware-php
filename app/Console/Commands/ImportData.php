@@ -67,7 +67,7 @@ class ImportData extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
     $this->info('Getting diceware data');
     $this->getDicewareImporter()->import();

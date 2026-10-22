@@ -11,6 +11,6 @@
 |
 */
 
-$app->get('/', function() use ($app) {
+$app->router->get('/', function() {
 	return 'Hello World';
 });

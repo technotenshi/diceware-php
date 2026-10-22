@@ -10,10 +10,10 @@ class DicewareTest extends TestCase
     public function testImport()
     {
         $dicewareList = 'foo';
-        $mock = $this->getMock('Acme\Importer\Diceware', [
+        $mock = $this->getMockBuilder(Diceware::class)->disableOriginalConstructor()->onlyMethods([
              'getFromWeb',
              'saveToDisk',
-            ], [], '', false);
+            ])->getMock();
         $mock->expects($this->once())->method('getFromWeb')->will($this->returnValue($dicewareList));
         $mock->expects($this->once())->method('saveToDisk')->with($dicewareList);
         $mock->import();
@@ -22,33 +22,28 @@ class DicewareTest extends TestCase
     public function testGetFromWeb()
     {
         $body = 'foo';
-        $responseMock = $this->getMock('GuzzleHttp\Message\Response', [
-            'getBody',
-            ], [], '', false);
-        $responseMock->expects($this->once())->method('getBody')->will($this->returnValue($body));
-        $clientMock = $this->getMock('GuzzleHttp\Client', [
-            'get',
-            ], [], '', false);
-        $clientMock->expects($this->once())->method('get')->with(Diceware::DICEWARE_URL)->will($this->returnValue($responseMock));
-        $mock = $this->getMock('Acme\Importer\Diceware', [
+        $responseMock = new \GuzzleHttp\Psr7\Response(200, [], $body);
+        $clientMock = $this->getMockBuilder(\GuzzleHttp\Client::class)->onlyMethods(['request'])->getMock();
+        $clientMock->expects($this->once())->method('request')->with('GET', Diceware::DICEWARE_URL, [])->willReturn($responseMock);
+        $mock = $this->getMockBuilder(Diceware::class)->disableOriginalConstructor()->onlyMethods([
             'getHttpClient',
-            ], [], '', false);
+            ])->getMock();
         $mock->expects($this->once())->method('getHttpClient')->will($this->returnValue($clientMock));
-        $this->invoke($mock, 'getFromWeb', []);
+        $this->assertSame($body, $this->invoke($mock, 'getFromWeb', []));
     }
     
     public function testSaveToDisk()
     {
         $data = 'foo';
-        $fileSystem = $this->getMock('Illuminate\Filesystem\Filesystem');
+        $fileSystem = $this->createMock(\Illuminate\Contracts\Filesystem\Filesystem::class);
         $fileSystem->expects($this->once())->method('put')->with(Diceware::DICEWARE_FILE, $data);
         
-        $fsFactory = $this->getMock('Illuminate\Contracts\Filesystem\Factory');
+        $fsFactory = $this->createMock(\Illuminate\Contracts\Filesystem\Factory::class);
         $fsFactory->expects($this->once())->method('disk')->with('local')->will($this->returnValue($fileSystem));
         
-        $mock = $this->getMock('Acme\Importer\Diceware', [
+        $mock = $this->getMockBuilder(Diceware::class)->disableOriginalConstructor()->onlyMethods([
             'getFsFactory',
-            ], [], '', false);
+            ])->getMock();
         $mock->expects($this->once())->method('getFsFactory')->will($this->returnValue($fsFactory));
         $this->invoke($mock, 'saveToDisk', [$data]);
     }

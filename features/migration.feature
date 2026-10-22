@@ -5,11 +5,4 @@ Feature: migration
 Scenario: Run a migration
   Given I am in the root directory
   When I run "php artisan migrate:status --no-ansi"
-  Then I should get:
-    """
-    +------+-----------------------------------------+
-    | Ran? | Migration                               |
-    +------+-----------------------------------------+
-    | Y    | 2015_04_21_195843_create_diceware_table |
-    +------+-----------------------------------------+
-    """
+  Then the diceware migration should be marked as run

@@ -5,14 +5,16 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "laravel/lumen-framework": "5.0.*",
-        "vlucas/phpdotenv": "~1.0",
-        "guzzlehttp/guzzle": "~5.2",
-        "behat/behat": "~3.0"
+        "laravel/lumen-framework": "~11.2.0",
+        "vlucas/phpdotenv": "~5.7.0",
+        "guzzlehttp/guzzle": "~7.16.0",
+        "behat/behat": "~3.0",
+        "php": ">=8.2.35 <8.3 || >=8.3.36 <8.4 || >=8.4.27 <8.5 || >=8.5.12 <8.6",
+        "league/flysystem": "~3.36.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
-        "satooshi/php-coveralls": "~1.0"
+        "phpunit/phpunit": "~10.5.66",
+        "php-coveralls/php-coveralls": "~2.9.1"
     },
     "autoload": {
         "psr-4": {
@@ -27,9 +29,11 @@
         ]
     },
     "config": {
-        "preferred-install": "dist",
-        "allow-plugins": {
-            "kylekatarnls/update-helper": true
-        }
+        "preferred-install": "dist"
+    },
+    "scripts": {
+        "verify-runtime": "@php scripts/verify-runtime.php",
+        "pre-install-cmd": "@verify-runtime",
+        "pre-update-cmd": "@verify-runtime"
     }
 }
