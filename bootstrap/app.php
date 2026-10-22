@@ -1,8 +1,10 @@
 <?php
 
+require_once __DIR__.'/../scripts/verify-runtime.php';
+
 require_once __DIR__.'/../vendor/autoload.php';
 
-Dotenv::load(__DIR__.'/../');
+Dotenv\Dotenv::createImmutable(dirname(__DIR__))->safeLoad();
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +17,7 @@ Dotenv::load(__DIR__.'/../');
 |
 */
 
-$app = new Laravel\Lumen\Application;
+$app = new Laravel\Lumen\Application(dirname(__DIR__));
 
 $app->withFacades();
 
@@ -76,7 +78,9 @@ $app->singleton(
 |
 */
 
-// $app->register('App\Providers\AppServiceProvider');
+$app->configure('filesystems');
+$app->register(Illuminate\Filesystem\FilesystemServiceProvider::class);
+$app->alias('filesystem', Illuminate\Contracts\Filesystem\Factory::class);
 
 /*
 |--------------------------------------------------------------------------

@@ -99,7 +99,7 @@ class Diceware
     protected function getFromWeb()
     {
         $response = $this->getHttpClient()->get(self::DICEWARE_URL);
-        return $response->getBody();
+        return (string) $response->getBody();
     }
     
     /**
